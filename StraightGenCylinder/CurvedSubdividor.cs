@@ -9,6 +9,9 @@ namespace StraightGenCylinder
 {
     static class CurvedSubdividor
     {
+        private const double PROXIMITY_DISTANCE = 3.0;
+        private const double PCA_DISTANCE = 2 * PROXIMITY_DISTANCE;
+
         public static Tuple<Point[], Point[], Point[]> Subdivide(Point[] l1, Point[] l2)
         {
             var transform1 = new double[512, 512];
@@ -54,24 +57,65 @@ namespace StraightGenCylinder
 
 
             // filter extreme points (remove outliers) and add first/last medial points
-            var filteredPoints = GetLargestCluster(medAxisPoints, threshold: 3.0);
-            filteredPoints =
-                Enumerable.Repeat(WpfUtils.Lerp(l1[0], l2[0], 0.5), 1)
-                .Concat(filteredPoints)
-                .Concat(Enumerable.Repeat(WpfUtils.Lerp(l1.Last(), l2.Last(), 0.5), 1))
-                .ToArray();
+            var filteredPoints = GetLargestCluster(medAxisPoints, threshold: PROXIMITY_DISTANCE);
 
             // connect the extreme points with a long path (spanning tree algorithm)
-            var path = GetShortestPath(filteredPoints, 0, filteredPoints.Length - 1);
-            return Tuple.Create(filteredPoints, (Point[])null, (Point[])null);
+            var sourceTarget = GetSourceTarget(l1, l2, filteredPoints);
+            var path = GetShortestPath(filteredPoints, sourceTarget.Item1, sourceTarget.Item2);
+            var smoothed = SmoothPath(path);
+            return Tuple.Create(path, (Point[])null, (Point[])null);
 
             // smooth the path
 
             // create the result
         }
 
+        private static Point[] SmoothPath(Point[] path)
+        {
+            return path; // todo: perform smoothing proceduce
+        }
+
+        private static Tuple<int, int> GetSourceTarget(Point[] l1, Point[] l2, Point[] filteredPoints)
+        {
+            var sourceMidpoint = WpfUtils.Lerp(l1[0], l2[0], 0.5);
+            var targetMidpoint = WpfUtils.Lerp(l1.Last(), l2.Last(), 0.5);
+            var indices = Enumerable.Range(0,filteredPoints.Length);
+
+            var source = indices.OrderBy(i => (sourceMidpoint - filteredPoints[i]).LengthSquared).First();
+            var target = indices.OrderBy(i => (targetMidpoint - filteredPoints[i]).LengthSquared).First();
+            return Tuple.Create(source, target);
+        }
+
         private static Point[] GetShortestPath(Point[] points, int source, int target)
         {
+            Func<int, int, double> weight = (x, y) => (points[x] - points[y]).Length;
+            var graph = GetPointsGraph(points);
+            var path = Dijkstra.ShortestPath(graph, weight, source, target);
+            var result = path.Select(i => points[i]).ToArray();
+            return result;
+        }
+
+        private static IEnumerable<Tuple<int, int>> GetPointsGraph(Point[] points)
+        {
+            IPointsSearchStructure2D searchStructure = new NaivePointsSearchStructure(points);
+            return from i in Enumerable.Range(0, points.Length)
+                   let pnt = points[i]
+                   from j in FindNearPoints(pnt, searchStructure, PROXIMITY_DISTANCE)
+                   where i != j
+                   select Tuple.Create(i, j);
+        }
+
+        private static IEnumerable<int> FindNearPoints(Point pnt, IPointsSearchStructure2D searchStructure, double distance)
+        {
+            var result = new int[0];
+            while (result.Length < 2)
+            {
+                var rect = new Rect(pnt - new Vector(distance, distance), pnt + new Vector(distance, distance));
+                result = searchStructure.PointsInRect(rect);
+                distance = distance * 1.5;
+            }
+
+            return result;
         }
 
         private static Point[] GetLargestCluster(IList<Point> medAxisPoints, double threshold)
@@ -144,25 +188,5 @@ namespace StraightGenCylinder
 
             return result;
         }
-
-        #region DelegateComparer class
-
-        private class DelegateComparer<T> : IComparer<T>
-        {
-            private readonly Comparison<T> comparison;
-
-            public DelegateComparer(Comparison<T> comparison)
-            {
-                this.comparison = comparison;
-            }
-
-            public int Compare(T x, T y)
-            {
-                return comparison(x, y);
-            }
-        }
-
-
-        #endregion
     }
 }

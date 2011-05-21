@@ -96,14 +96,20 @@
     <Compile Include="ChamferDistanceTransform.cs" />
     <Compile Include="CSVWriter.cs" />
     <Compile Include="CurvedSubdividor.cs" />
+    <Compile Include="DelegateComparer.cs" />
+    <Compile Include="Dijkstra.cs" />
     <Compile Include="EnumerableExtensions.cs" />
+    <Compile Include="Graph.cs" />
     <Compile Include="ImageWriter.cs" />
     <Compile Include="IndexedUnionFind.cs" />
-    <Compile Include="IPointsSearchStructure.cs" />
+    <Compile Include="IPointsSearchStructure2D.cs" />
+    <Compile Include="KDTreeSearchStructure2D.cs" />
+    <Compile Include="NaivePointsSearchStructure.cs" />
     <Compile Include="PCALine.cs" />
     <Compile Include="PolygonRasterizer.cs" />
     <Compile Include="Rasterizer.cs" />
     <Compile Include="SilhouettesSubdividor.cs" />
+    <Compile Include="TupleExtensions.cs" />
     <Compile Include="WpfUtils.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

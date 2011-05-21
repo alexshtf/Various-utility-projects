@@ -127,6 +127,36 @@ namespace StraightGenCylinder
 
             var subdivisionResult = CurvedSubdividor.Subdivide(l1, l2);
             canvas.Children.Add(VisualizePoints(subdivisionResult.Item1));
+            //canvas.Children.Add(VisualizeMatch(subdivisionResult.Item2, subdivisionResult.Item3));
+        }
+
+        private UIElement VisualizeMatch(Point[] left, Point[] right)
+        {
+            Contract.Requires(left.Length == right.Length);
+            int n = left.Length;
+
+            var geometry = new GeometryGroup();
+            for (int i = 0; i < n; ++i)
+            {
+                var l = left[i];
+                var r = right[i];
+                geometry.Children.Add(new EllipseGeometry(l, 2, 2));
+                geometry.Children.Add(new EllipseGeometry(r, 2, 2));
+                geometry.Children.Add(new LineGeometry(l, r));
+            }
+            geometry.Freeze();
+
+            return new Path
+            {
+                Stroke = Brushes.Blue,
+                Fill = new SolidColorBrush { Color = Colors.Blue, Opacity = 0.2 },
+                Data = geometry,
+            };
+        }
+
+        private UIElement VisualizePolyline(Point[] points)
+        {
+            throw new NotImplementedException();
         }
 
         private UIElement VisualizePoints(Point[] point)

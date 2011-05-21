@@ -58,9 +58,9 @@ namespace StraightGenCylinder
 
         private TreeNode RecursiveBuildTree(Random random, IList<Point> points, IList<int> indices, bool isXAxis)
         {
-            var bbox = GetBoundingRect(ElementsAt(points, indices));
+            var bbox = indices.Count > 0 ? GetBoundingRect(ElementsAt(points, indices)) : new Rect();
 
-            if (points.Count < LEAF_THRESHOLD)
+            if (indices.Count < LEAF_THRESHOLD)
                 return new TreeNode { Children = null, BoundingBox = bbox, PointIndices = indices.ToArray() };
             else
             {
@@ -79,7 +79,7 @@ namespace StraightGenCylinder
                                       where valueExtractor(points[i]) > pivot
                                       select i;
 
-                var middleSubIndices = Enumerable.Range(0, points.Count).Except(leftSubIndices).Except(rightSubIndices);
+                var middleSubIndices = indices.Except(leftSubIndices).Except(rightSubIndices);
                 return new TreeNode
                 {
                     Children = new TreeNode[] 
@@ -87,7 +87,7 @@ namespace StraightGenCylinder
                         RecursiveBuildTree(random, points, leftSubIndices.ToArray(), !isXAxis),
                         RecursiveBuildTree(random, points, rightSubIndices.ToArray(), !isXAxis),
                     },
-                    PointIndices = ElementsAt(indices, middleSubIndices),
+                    PointIndices = middleSubIndices.ToArray(),
                     BoundingBox = bbox,
                 };
             }
