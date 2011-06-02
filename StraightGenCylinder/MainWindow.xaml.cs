@@ -126,11 +126,40 @@ namespace StraightGenCylinder
             var l2 = polylines.ElementAt(1).Points.ToArray();
 
             var subdivisionResult = CurvedSubdividor.Subdivide(l1, l2);
-            canvas.Children.Add(VisualizePoints(subdivisionResult.Item1));
-            //canvas.Children.Add(VisualizeMatch(subdivisionResult.Item2, subdivisionResult.Item3));
+            canvas.Children.Add(VisualizeSubdivision(subdivisionResult));
         }
 
-        private UIElement VisualizeMatch(Point[] left, Point[] right)
+        private UIElement VisualizeSubdivision(SubdivisionResult subdivisionResult)
+        {
+            var pointsVisualization = VisualizePoints(subdivisionResult.MiddlePoints);
+            var vectorsVisualization = VisualizeVectors(subdivisionResult.MiddlePoints, subdivisionResult.Normals);
+            return new Canvas { Children = { pointsVisualization, vectorsVisualization } };
+        }
+
+        private static UIElement VisualizeVectors(Point[] points, Vector[] vectors)
+        {
+            const double VECTOR_SIZE = 25;
+
+            Contract.Requires(points.Length == vectors.Length);
+            var n = points.Length;
+
+            var geometryGroup = new GeometryGroup
+            {
+                Children = new GeometryCollection(
+                    from i in Enumerable.Range(0, n)
+                    let pc = points[i]
+                    let pleft = pc - VECTOR_SIZE * vectors[i]
+                    let pright = pc + VECTOR_SIZE * vectors[i]
+                    from p in new Point[] { pleft, pright }
+                    select new LineGeometry { StartPoint = pc, EndPoint = p }
+                ),
+            };
+            geometryGroup.Freeze();
+
+            return new Path { Data = geometryGroup, Stroke = Brushes.Blue, StrokeThickness = 1, };
+        }
+
+        private static UIElement VisualizeMatch(Point[] left, Point[] right)
         {
             Contract.Requires(left.Length == right.Length);
             int n = left.Length;

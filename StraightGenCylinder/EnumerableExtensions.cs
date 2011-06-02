@@ -8,6 +8,15 @@ namespace StraightGenCylinder
 {
     static class EnumerableExtensions
     {
+        public static double Variance(this IEnumerable<double> values)
+        {
+            var squared = values.Select(x => x * x);
+            var avg = values.Average();
+
+            // var(X) = E(X²) - E²(X)
+            return squared.Average() - avg * avg;
+        }
+
         public static IEnumerable<Tuple<T, T>> SeqPairs<T>(this IEnumerable<T> items)
         {
             Contract.Requires(items != null);

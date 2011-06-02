@@ -7,12 +7,20 @@ using System.Diagnostics.Contracts;
 
 namespace StraightGenCylinder
 {
+    class SubdivisionResult
+    {
+        public Point[] MiddlePoints { get; set; }
+        public Vector[] Normals { get; set; }
+        public Point[] ProjectedPositiveSide { get; set; }
+        public Point[] ProjectedNegativeSide { get; set; }
+    }
+
     static class CurvedSubdividor
     {
         private const double PROXIMITY_DISTANCE = 3.0;
         private const double PCA_DISTANCE = 2 * PROXIMITY_DISTANCE;
 
-        public static Tuple<Point[], Point[], Point[]> Subdivide(Point[] l1, Point[] l2)
+        public static SubdivisionResult Subdivide(Point[] l1, Point[] l2)
         {
             var transform1 = new double[512, 512];
             var transform2 = new double[512, 512];
@@ -63,16 +71,40 @@ namespace StraightGenCylinder
             var sourceTarget = GetSourceTarget(l1, l2, filteredPoints);
             var path = GetShortestPath(filteredPoints, sourceTarget.Item1, sourceTarget.Item2);
             var smoothed = SmoothPath(path);
-            return Tuple.Create(path, (Point[])null, (Point[])null);
+            return new SubdivisionResult
+            {
+                MiddlePoints = smoothed.Item1,
+                Normals = smoothed.Item2,
+            };
 
             // smooth the path
 
             // create the result
         }
 
-        private static Point[] SmoothPath(Point[] path)
+        private static Tuple<Point[], Vector[]> SmoothPath(Point[] path)
         {
-            return path; // todo: perform smoothing proceduce
+            var xs = path.Select(pnt => pnt.X).ToArray();
+            var ys = path.Select(pnt => pnt.Y).ToArray();
+
+            var optimalFit = LSPointsIntervalsFitter.FitOptimalIntervals(xs, ys);
+            var xInterval = optimalFit.Item1;
+            var yInterval = optimalFit.Item2;
+            var breakIndices = optimalFit.Item3;
+
+            var smoothedPoints = new Point[path.Length];
+            var smoothedNormals = new Vector[path.Length];
+            for (int t = 0; t < path.Length; ++t)
+            {
+                var sx = IntervalsSampler.SampleIntervals(xInterval, t, breakIndices);
+                var sy = IntervalsSampler.SampleIntervals(yInterval, t, breakIndices);
+
+                smoothedPoints[t] = new Point(sx.Value, sy.Value);
+                smoothedNormals[t] = new Vector(-sy.Derivative, sx.Derivative); // perpendicular to the tangent vector (x, y) => (-y, x)
+                smoothedNormals[t].Normalize();
+            }
+
+            return Tuple.Create(smoothedPoints, smoothedNormals);
         }
 
         private static Tuple<int, int> GetSourceTarget(Point[] l1, Point[] l2, Point[] filteredPoints)
