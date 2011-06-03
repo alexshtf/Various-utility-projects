@@ -18,10 +18,11 @@ namespace StraightGenCylinder
             {
                 var xStd = Math.Sqrt(xs.Variance());
                 var yStr = Math.Sqrt(ys.Variance());
-                threshold = Math.Max(xStd, yStr) / 20;
+                threshold = Math.Max(xStd, yStr) / 50;
             }
 
-            return EnumerateFits(xs, ys, threshold).Last(); // fits sequence improves until the last (best) fit is reached.
+            var result = EnumerateFits(xs, ys, threshold).Last(); // fits sequence improves until the last (best) fit is reached.
+            return result;
         }
 
         private static IEnumerable<Tuple<double[][], double[][], int[]>> EnumerateFits(double[] xs, double[] ys, double threshold)
