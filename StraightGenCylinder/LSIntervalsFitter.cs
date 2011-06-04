@@ -59,10 +59,39 @@ namespace StraightGenCylinder
 
             var intervalsCount = breakIndices.Length;
 
+            // build linear system we get by using Lagrange multipliers on the optimization problem
+            SquareMatrix leftHandMatrix;
+            ColumnVector rightHandVector;
+            BuildLinearSystem(values, breakIndices, intervalsCount, out leftHandMatrix, out rightHandVector);
+
+            // solve the linear system to get the primal and dual values
+            var solution = SolveLinearSystem(leftHandMatrix, rightHandVector);
+
+            // create the result using the primal values (5*i, ..., 5*i + 3 are the coefficients for interval i)
+            var result = new double[intervalsCount][];
+            for (int i = 0; i < intervalsCount; ++i)
+            {
+                result[i] = new double[4];
+                for (int j = 0; j < 4; ++j)
+                    result[i][j] = solution[7 * i + j];
+            }
+
+            return result;
+        }
+
+        private static ColumnVector SolveLinearSystem(SquareMatrix leftHandMatrix, ColumnVector rightHandVector)
+        {
+            var lu = leftHandMatrix.LUDecomposition();
+            var solution = lu.Solve(rightHandVector);
+            return solution;
+        }
+
+        private static void BuildLinearSystem(double[] values, int[] breakIndices, int intervalsCount, out SquareMatrix leftHandMatrix, out ColumnVector rightHandVector)
+        {
             // build linear system of equations to solve the approximation problem
             var systemSize = 7 * intervalsCount - 3; // matrix size
-            var leftHandMatrix = new SquareMatrix(systemSize);
-            var rightHandVector = new ColumnVector(systemSize);
+            leftHandMatrix = new SquareMatrix(systemSize);
+            rightHandVector = new ColumnVector(systemSize);
             for (int intervalIndex = 0; intervalIndex < intervalsCount; ++intervalIndex)
             {
                 var intervalStart = intervalIndex == 0 ? 0 : breakIndices[intervalIndex - 1];
@@ -124,21 +153,6 @@ namespace StraightGenCylinder
                     }
                 }
             }
-
-            // solve the system
-            var lu = leftHandMatrix.LUDecomposition();
-            var solution = lu.Solve(rightHandVector);
-
-            // create the result (5*i, ..., 5*i + 3 are the coefficients for interval i)
-            var result = new double[intervalsCount][];
-            for (int i = 0; i < intervalsCount; ++i)
-            {
-                result[i] = new double[4];
-                for (int j = 0; j < 4; ++j)
-                    result[i][j] = solution[7 * i + j];
-            }
-
-            return result;
         }
     }
 }
