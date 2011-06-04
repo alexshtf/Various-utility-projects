@@ -9,8 +9,27 @@ namespace StraightGenCylinder
     /// <summary>
     /// A static class for operations on graph where each vertes is a zero-based index.
     /// </summary>
-    static class IndicesGraph
+    public static class IndicesGraph
     {
+        /// <summary>
+        /// Converts a list of edges to a "flat" representation. For example, { (1, 2), (3, 4) } will become  {1, 2, 3, 4}.
+        /// </summary>
+        /// <param name="edges">The graph edges</param>
+        /// <returns></returns>
+        [Pure]
+        public static IEnumerable<int> Flatten(this IEnumerable<Tuple<int, int>> edges)
+        {
+            Contract.Requires(edges != null);
+            Contract.Requires(Contract.ForAll(edges, edge => edge.Item1 >= 0 && edge.Item2 >= 0));
+            
+            Contract.Ensures(Contract.Result<IEnumerable<int>>() != null);
+
+            return from edge in edges
+                   let vertices = edge.Enumerate()
+                   from vertex in vertices
+                   select vertex;
+        }
+
         /// <summary>
         /// Converts a graph represented by a collection of edges to neighborhood-lists representation.
         /// </summary>

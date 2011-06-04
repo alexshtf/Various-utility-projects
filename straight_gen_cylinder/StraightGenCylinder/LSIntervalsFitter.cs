@@ -51,7 +51,7 @@ namespace StraightGenCylinder
             Contract.Requires(values.Length >= 4);
             Contract.Requires(breakIndices != null);
             Contract.Requires(breakIndices.Length >= 1); // we have at-least one interval
-            Contract.Requires(Contract.ForAll(0, breakIndices.Length - 1, i => breakIndices[i + 1] - breakIndices[i] >= 4)); // each interval has at-least four points
+            Contract.Requires(Contract.ForAll(0, breakIndices.Length - 1, i => breakIndices[i + 1] - breakIndices[i] >= 3)); // each interval has at-least four points
 
             Contract.Ensures(Contract.Result<double[][]>() != null);
             Contract.Ensures(Contract.Result<double[][]>().Length == breakIndices.Length); // one polynomial for every interval

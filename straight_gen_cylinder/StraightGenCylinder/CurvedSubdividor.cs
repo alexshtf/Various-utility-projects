@@ -118,7 +118,7 @@ namespace StraightGenCylinder
         {
             Func<int, int, double> weight = (x, y) => (points[x] - points[y]).Length;
             var graph = GetPointsGraph(points);
-            var path = Dijkstra.ShortestPath(graph, weight, source, target);
+            var path = Dijkstra.Compute(graph, weight, source, target);
             var result = path.Select(i => points[i]).ToArray();
             return result;
         }

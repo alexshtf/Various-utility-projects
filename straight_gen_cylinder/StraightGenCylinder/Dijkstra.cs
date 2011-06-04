@@ -6,14 +6,36 @@ using System.Diagnostics.Contracts;
 
 namespace StraightGenCylinder
 {
-    static class Dijkstra
+    /// <summary>
+    /// Computes shortest paths using the Dijkstra algorithm. Graph vertices are integers [0..n) for some n. 
+    /// Graph edges are tuples of vertices.
+    /// </summary>
+    public static class Dijkstra
     {
-        public static IList<int> ShortestPath(IEnumerable<Tuple<int, int>> edges, Func<int, int, double> weight, int source, int target)
+        /// <summary>
+        /// Computes the shortest path between two graph vertices using the Dijkstra algorithm.
+        /// </summary>
+        /// <param name="edges">The list of graph edges. Each node </param>
+        /// <param name="weight">The weight function that assigns each edge a non-negative weight</param>
+        /// <param name="source">The source vertex</param>
+        /// <param name="target">The target vertex</param>
+        /// <returns>A list of vertices on the shortest path from <paramref name="source"/> to <paramref name="target"/>, or an empty
+        /// list of no path exists.</returns>
+        public static IList<int> Compute(IEnumerable<Tuple<int, int>> edges, [Pure] Func<int, int, double> weight, int source, int target)
         {
             Contract.Requires(edges != null);
+            Contract.Requires(Contract.ForAll(edges, edge => edge.Item1 >= 0 && edge.Item2 >= 0)); // vertices are non-negative integers.
+            
             Contract.Requires(weight != null);
-            Contract.Requires(source <= edges.MaxNodeIndex());
+            Contract.Requires(Contract.ForAll(edges, edge => weight(edge.Item1, edge.Item2) >= 0)); // non-negative edge weights
+
+            Contract.Requires(source <= edges.MaxNodeIndex()); // source and target are valid nodes
             Contract.Requires(target <= edges.MaxNodeIndex());
+            
+            Contract.Ensures(Contract.Result<IList<int>>() != null);
+            Contract.Ensures(Contract.ForAll(Contract.Result<IList<int>>(), vertex => edges.Flatten().Contains(vertex))); // valid vertices
+            Contract.Ensures(Contract.Result<IList<int>>().Count == 0 || Contract.Result<IList<int>>().First() == source); // the first path vertex is source
+            Contract.Ensures(Contract.Result<IList<int>>().Count == 0 || Contract.Result<IList<int>>().Last() == target); // the last path vertex is target
 
             var previous = ShortestPaths(edges, weight, source);
 
