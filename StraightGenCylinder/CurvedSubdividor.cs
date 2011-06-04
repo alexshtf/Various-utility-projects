@@ -132,18 +132,18 @@ namespace StraightGenCylinder
             var searchStructure = new NaivePointsSearchStructure(points);
             return from i in Enumerable.Range(0, points.Length)
                    let pnt = points[i]
-                   from j in FindNearPoints(pnt, searchStructure, PROXIMITY_DISTANCE)
+                   from j in FindNearPoints(pnt, searchStructure.PointsInRect, PROXIMITY_DISTANCE)
                    where i != j
                    select Tuple.Create(i, j);
         }
 
-        private static IEnumerable<int> FindNearPoints(Point pnt, IPointsSearchStructure2D searchStructure, double distance)
+        private static IEnumerable<int> FindNearPoints(Point pnt, Func<Rect, int[]> pointsInRect, double distance)
         {
             var result = new int[0];
             while (result.Length < 2)
             {
                 var rect = new Rect(pnt - new Vector(distance, distance), pnt + new Vector(distance, distance));
-                result = searchStructure.PointsInRect(rect);
+                result = pointsInRect(rect);
                 distance = distance * 1.5;
             }
 

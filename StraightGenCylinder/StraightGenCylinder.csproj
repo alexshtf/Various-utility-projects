@@ -104,7 +104,6 @@
     <Compile Include="IndexedUnionFind.cs" />
     <Compile Include="IntervalsSampler.cs" />
     <Compile Include="LSIntervalsFitter.cs" />
-    <Compile Include="IPointsSearchStructure2D.cs" />
     <Compile Include="KDTreeSearchStructure2D.cs" />
     <Compile Include="LSPointsIntervalsFitter.cs" />
     <Compile Include="NaivePointsSearchStructure.cs" />

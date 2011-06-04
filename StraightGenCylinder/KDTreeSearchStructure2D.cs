@@ -7,7 +7,7 @@ using System.Diagnostics.Contracts;
 
 namespace StraightGenCylinder
 {
-    class KDTreeSearchStructure2D : IPointsSearchStructure2D
+    class KDTreeSearchStructure2D
     {
         private const int LEAF_THRESHOLD = 10;
 

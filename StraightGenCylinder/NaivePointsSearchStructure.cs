@@ -6,7 +6,7 @@ using System.Windows;
 
 namespace StraightGenCylinder
 {
-    class NaivePointsSearchStructure : IPointsSearchStructure2D
+    class NaivePointsSearchStructure
     {
         private readonly IList<Point> points;
 
