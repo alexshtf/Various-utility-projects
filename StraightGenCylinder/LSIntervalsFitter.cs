@@ -3,13 +3,60 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Meta.Numerics.Matrices;
+using System.Diagnostics.Contracts;
 
 namespace StraightGenCylinder
 {
+    /// <summary>
+    /// Fits a set of 3rd degree polynomials to a set of values using Least-Squares fitting. 
+    /// </summary>
     static class LSIntervalsFitter
     {
+        /// <summary>
+        /// Fits a set of 3rd degree polynomials given a set of values, using Least-Squares fitting. 
+        /// </summary>
+        /// <param name="values">An array of values used to fit the polynomial functions.</param>
+        /// <param name="breakIndices">The indices where the values array is broken into intervals.</param>
+        /// <returns>An array of coefficients for each interval. Each interval is itself an array of 4 coefficients of the polynomial.</returns>
+        /// <remarks>
+        /// <para>
+        /// We assume that the array of values is a sampled function f:R -> R, such that f(i) is given by values[i]. We define n = values.Length. 
+        /// The integer interval [0, n) is divided to subintervals such that:
+        /// </para>
+        /// <list type="bullet">
+        /// <item>Each sub-interval contains at-least 4 points.</item>
+        /// <item>If i is the last point of a sub-interval then i is the first point of the next sub-interval, unless i = n - 1</item>
+        /// <item>Each sub-interval contains at-least 4 points.</item>
+        /// <item>The union of all sub-intervals is [0, n)</item>
+        /// </list>
+        /// <para>The array <paramref name="breakIndices"/> defines the breaking points of [0, n) into sub-intervals. That is, breakIndices[j] is the
+        /// last point of the j-th interval.
+        /// </para>
+        /// <para>
+        /// The method fits one polynomial for each sub-interval and returns its coefficients. The fitting is done such that:
+        /// </para>
+        /// <list type="bullet">
+        /// <item>The mean squared error between each polynomial and the points in its interval is minimized</item>
+        /// <item>For any two intervals that share a point i, the polynomials corresponding to the intervals give the same value for i</item>
+        /// <item>For any two intervals that share a point i, the polynomials corresponding to the intervals give the same 1-st derivative value for i</item>
+        /// <item>For any two intervals that share a point i, the polynomials corresponding to the intervals give the same 2-nd derivative value for i</item>
+        /// </list>
+        /// <para>
+        /// The above requirements assure us that the sequence of polynomials is a smooth function that fits the values.
+        /// </para>
+        /// </remarks>
         public static double[][] FitIntervals(double[] values, params int[] breakIndices)
         {
+            Contract.Requires(values != null);
+            Contract.Requires(values.Length >= 4);
+            Contract.Requires(breakIndices != null);
+            Contract.Requires(breakIndices.Length >= 1); // we have at-least one interval
+            Contract.Requires(Contract.ForAll(0, breakIndices.Length - 1, i => breakIndices[i + 1] - breakIndices[i] >= 4)); // each interval has at-least four points
+
+            Contract.Ensures(Contract.Result<double[][]>() != null);
+            Contract.Ensures(Contract.Result<double[][]>().Length == breakIndices.Length); // one polynomial for every interval
+            Contract.Ensures(Contract.ForAll(Contract.Result<double[][]>(), coefficients => coefficients != null && coefficients.Length == 4)); // we have four coefficients for each interval
+
             var intervalsCount = breakIndices.Length;
 
             // build linear system of equations to solve the approximation problem

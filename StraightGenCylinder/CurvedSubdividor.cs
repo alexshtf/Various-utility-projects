@@ -22,11 +22,7 @@ namespace StraightGenCylinder
 
         public static SubdivisionResult Subdivide(Point[] l1, Point[] l2)
         {
-            var transform1 = new double[512, 512];
-            var transform2 = new double[512, 512];
-            ChamferDistanceTransform.Compute(l1, transform1);
-            ChamferDistanceTransform.Compute(l2, transform2);
-            var totalTransform = Min(transform1, transform2);
+            var totalTransform = GetDistanceTransform(l1, l2);
 
             // create a polygon from l1, l2: we assume here that l1 and l2 have the same direction
             var polygon = l1.Concat(l2.Reverse()).ToArray();
@@ -219,6 +215,16 @@ namespace StraightGenCylinder
                     result[x, y] = Math.Min(transform1[x, y], transform2[x, y]);
 
             return result;
+        }
+
+        private static double[,] GetDistanceTransform(Point[] l1, Point[] l2)
+        {
+            var transform1 = new double[512, 512];
+            var transform2 = new double[512, 512];
+            ChamferDistanceTransform.Compute(l1, transform1);
+            ChamferDistanceTransform.Compute(l2, transform2);
+            var totalTransform = Min(transform1, transform2);
+            return totalTransform;
         }
     }
 }
