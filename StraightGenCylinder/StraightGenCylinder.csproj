@@ -99,7 +99,7 @@
     <Compile Include="DelegateComparer.cs" />
     <Compile Include="Dijkstra.cs" />
     <Compile Include="EnumerableExtensions.cs" />
-    <Compile Include="Graph.cs" />
+    <Compile Include="IndicesGraph.cs" />
     <Compile Include="ImageWriter.cs" />
     <Compile Include="IndexedUnionFind.cs" />
     <Compile Include="IntervalsSampler.cs" />

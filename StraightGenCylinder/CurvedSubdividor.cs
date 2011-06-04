@@ -129,7 +129,7 @@ namespace StraightGenCylinder
 
         private static IEnumerable<Tuple<int, int>> GetPointsGraph(Point[] points)
         {
-            IPointsSearchStructure2D searchStructure = new NaivePointsSearchStructure(points);
+            var searchStructure = new NaivePointsSearchStructure(points);
             return from i in Enumerable.Range(0, points.Length)
                    let pnt = points[i]
                    from j in FindNearPoints(pnt, searchStructure, PROXIMITY_DISTANCE)

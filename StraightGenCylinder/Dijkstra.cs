@@ -12,8 +12,8 @@ namespace StraightGenCylinder
         {
             Contract.Requires(edges != null);
             Contract.Requires(weight != null);
-            Contract.Requires(source <= edges.MaxNode());
-            Contract.Requires(target <= edges.MaxNode());
+            Contract.Requires(source <= edges.MaxNodeIndex());
+            Contract.Requires(target <= edges.MaxNodeIndex());
 
             var previous = ShortestPaths(edges, weight, source);
 
