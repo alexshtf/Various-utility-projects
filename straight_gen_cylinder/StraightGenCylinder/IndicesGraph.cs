@@ -15,7 +15,7 @@ namespace StraightGenCylinder
         /// Converts a list of edges to a "flat" representation. For example, { (1, 2), (3, 4) } will become  {1, 2, 3, 4}.
         /// </summary>
         /// <param name="edges">The graph edges</param>
-        /// <returns></returns>
+        /// <returns>The flattened vertex indices</returns>
         [Pure]
         public static IEnumerable<int> Flatten(this IEnumerable<Tuple<int, int>> edges)
         {
@@ -23,6 +23,9 @@ namespace StraightGenCylinder
             Contract.Requires(Contract.ForAll(edges, edge => edge.Item1 >= 0 && edge.Item2 >= 0));
             
             Contract.Ensures(Contract.Result<IEnumerable<int>>() != null);
+            Contract.Ensures(Contract.Result<IEnumerable<int>>().Count() == 2 * edges.Count());
+            Contract.Ensures(Contract.ForAll(0, edges.Count(), i => Contract.Result<IEnumerable<int>>().ElementAt(2 * i) == edges.ElementAt(i).Item1));
+            Contract.Ensures(Contract.ForAll(0, edges.Count(), i => Contract.Result<IEnumerable<int>>().ElementAt(2 * i + 1) == edges.ElementAt(i).Item2));
 
             return from edge in edges
                    let vertices = edge.Enumerate()
