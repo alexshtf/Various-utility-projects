@@ -5,7 +5,7 @@ using System.Text;
 
 namespace StraightGenCylinder
 {
-    static class TupleExtensions
+    public static class TupleExtensions
     {
         public static IEnumerable<T> Enumerate<T>(this Tuple<T> tuple)
         {
