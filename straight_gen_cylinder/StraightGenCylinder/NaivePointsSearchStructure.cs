@@ -15,7 +15,7 @@ namespace StraightGenCylinder
             this.points = points;
         }
 
-        public int[] PointsInRect(Rect rect)
+        public int[] GetPointsInRect(Rect rect)
         {
             var query = from i in Enumerable.Range(0, points.Count)
                         where rect.Contains(points[i])

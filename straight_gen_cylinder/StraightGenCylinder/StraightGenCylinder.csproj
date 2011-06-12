@@ -106,6 +106,7 @@
     <Compile Include="LSIntervalsFitter.cs" />
     <Compile Include="KDTreeSearchStructure2D.cs" />
     <Compile Include="LSPointsIntervalsFitter.cs" />
+    <Compile Include="PointsToPolylineConverter.cs" />
     <Compile Include="TwoLinesMedialAxis.cs" />
     <Compile Include="NaivePointsSearchStructure.cs" />
     <Compile Include="PCALine.cs" />
