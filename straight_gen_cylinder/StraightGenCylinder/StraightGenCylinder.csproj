@@ -93,6 +93,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AverageSmooth.cs" />
     <Compile Include="ChamferDistanceTransform.cs" />
     <Compile Include="CSVWriter.cs" />
     <Compile Include="CurvedSubdividor.cs" />
@@ -107,6 +108,7 @@
     <Compile Include="KDTreeSearchStructure2D.cs" />
     <Compile Include="LSPointsIntervalsFitter.cs" />
     <Compile Include="PointsToPolylineConverter.cs" />
+    <Compile Include="PolylineIntersector.cs" />
     <Compile Include="TwoLinesMedialAxis.cs" />
     <Compile Include="NaivePointsSearchStructure.cs" />
     <Compile Include="PCALine.cs" />

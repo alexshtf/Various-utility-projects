@@ -24,8 +24,6 @@ namespace StraightGenCylinder
             
             Contract.Ensures(Contract.Result<IEnumerable<int>>() != null);
             Contract.Ensures(Contract.Result<IEnumerable<int>>().Count() == 2 * edges.Count());
-            Contract.Ensures(Contract.ForAll(0, edges.Count(), i => Contract.Result<IEnumerable<int>>().ElementAt(2 * i) == edges.ElementAt(i).Item1));
-            Contract.Ensures(Contract.ForAll(0, edges.Count(), i => Contract.Result<IEnumerable<int>>().ElementAt(2 * i + 1) == edges.ElementAt(i).Item2));
 
             return from edge in edges
                    let vertices = edge.Enumerate()

@@ -8,6 +8,15 @@ namespace StraightGenCylinder
 {
     static class EnumerableExtensions
     {
+        public static IEnumerable<T> Generate<T>(T seed, Func<T, T> generator)
+        {
+            while (true)
+            {
+                yield return seed;
+                seed = generator(seed);
+            }
+        }
+
         public static double Variance(this IEnumerable<double> values)
         {
             var squared = values.Select(x => x * x);

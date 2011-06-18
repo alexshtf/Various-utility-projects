@@ -132,14 +132,12 @@ namespace StraightGenCylinder
         private UIElement VisualizeSubdivision(SubdivisionResult subdivisionResult)
         {
             var pointsVisualization = VisualizePoints(subdivisionResult.MiddlePoints);
-            var vectorsVisualization = VisualizeVectors(subdivisionResult.MiddlePoints, subdivisionResult.Normals);
+            var vectorsVisualization = VisualizeVectors(subdivisionResult.MiddlePoints, subdivisionResult.Normals, subdivisionResult.Radii);
             return new Canvas { Children = { pointsVisualization, vectorsVisualization } };
         }
 
-        private static UIElement VisualizeVectors(Point[] points, Vector[] vectors)
+        private static UIElement VisualizeVectors(Point[] points, Vector[] vectors, double[] radii)
         {
-            const double VECTOR_SIZE = 25;
-
             Contract.Requires(points.Length == vectors.Length);
             var n = points.Length;
 
@@ -148,8 +146,8 @@ namespace StraightGenCylinder
                 Children = new GeometryCollection(
                     from i in Enumerable.Range(0, n)
                     let pc = points[i]
-                    let pleft = pc - VECTOR_SIZE * vectors[i]
-                    let pright = pc + VECTOR_SIZE * vectors[i]
+                    let pleft = pc - radii[i] * vectors[i]
+                    let pright = pc + radii[i] * vectors[i]
                     from p in new Point[] { pleft, pright }
                     select new LineGeometry { StartPoint = pc, EndPoint = p }
                 ),

@@ -48,14 +48,17 @@ namespace StraightGenCylinder
             return result.ToArray();
         }
 
-        private static IEnumerable<Tuple<int, int>> GetPointsGraph(Point[] points, double proximityThreshold)
+        private static Tuple<int, int>[] GetPointsGraph(Point[] points, double proximityThreshold)
         {
             var searchStructure = new NaivePointsSearchStructure(points);
-            return from i in Enumerable.Range(0, points.Length)
-                   let pnt = points[i]
-                   from j in FindNearPoints(pnt, searchStructure.GetPointsInRect, proximityThreshold)
-                   where i != j
-                   select Tuple.Create(i, j);
+            var result = 
+                from i in Enumerable.Range(0, points.Length)
+                let pnt = points[i]
+                from j in FindNearPoints(pnt, searchStructure.GetPointsInRect, proximityThreshold)
+                where i != j
+                select Tuple.Create(i, j);
+
+            return result.ToArray();
         }
 
         private static IEnumerable<int> FindNearPoints(Point pnt, Func<Rect, int[]> pointsInRect, double distance)
