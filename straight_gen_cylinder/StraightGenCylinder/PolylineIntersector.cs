@@ -14,6 +14,10 @@ namespace StraightGenCylinder
     {
         private readonly Point[] polyline;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PolylineIntersector"/> class.
+        /// </summary>
+        /// <param name="polyline">The polyline.</param>
         public PolylineIntersector(IEnumerable<Point> polyline)
         {
             Contract.Requires(polyline != null);
